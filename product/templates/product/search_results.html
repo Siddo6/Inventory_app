@@ -1,0 +1,83 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class=" container shadow p-4 mx-auto mt-3 bg-body rounded">
+<h5 class="mt-4">Search results for "{{ query }}"</h5>
+{% now "Y-m" as current_date %}
+    {% if results %}
+       
+    <h5>Te gjitha veprimet e kryera per kete produkt:</h5>
+    <table class="table table-bordered table-striped" id="monthly_report">
+        <thead>
+            <th></th>
+            <th>Sasia (ne {{ product.unit }})</th>
+            <th>Cmimi/njesi</th>
+            <th>Data e veprimit</th>
+        </thead>
+    
+        {% for report in reports %}
+        <tr>
+            <td>{{ report.get_action_display }} </td>
+               <td> {{ report.quantity }}</td>
+                <td>{{ report.price }} ALL </td>
+                <td>{{ report.created_at }}</td>
+                {% endfor %}           
+        </tr>
+   
+    </table>
+     
+     
+            
+    
+
+    {% else %}
+
+    <p class="mx-3">Ti nuk ke te dhena te ruajtura per produktin e zgjedhur.</p>
+
+    {% endif %}
+</div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const table = document.getElementById('monthly_report');
+          const firstColumnValues = new Set();
+      
+          // Get unique values from the first column cells
+          table.querySelectorAll('tbody td:first-child').forEach(cell => {
+              firstColumnValues.add(cell.textContent.trim());
+          });
+      
+          // Create select dropdown for the first column
+          const select = document.createElement('select');
+          const defaultOption = document.createElement('option');
+          defaultOption.value = '';
+          defaultOption.textContent = 'Veprimi i kryer';
+          select.appendChild(defaultOption);
+      
+          firstColumnValues.forEach(value => {
+              const option = document.createElement('option');
+              option.value = value;
+              option.textContent = value;
+              select.appendChild(option);
+          });
+      
+          // Add event listener to filter rows based on the selected value
+          select.addEventListener('change', function () {
+              const selectedValue = this.value;
+              table.querySelectorAll('tbody tr').forEach(row => {
+                  const cell = row.querySelector('td:first-child');
+                  const cellValue = cell.textContent.trim();
+                  if (selectedValue === '' || cellValue === selectedValue) {
+                      row.style.display = 'table-row';
+                  } else {
+                      row.style.display = 'none';
+                  }
+              });
+          });
+      
+          // Add select dropdown to the header of the first column
+          const header = table.querySelector('thead th:first-child');
+          header.appendChild(select);
+      });
+      
+      </script>
+      {% endblock %}

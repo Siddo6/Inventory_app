@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<h3 class="d-flex justify-content-center align-items-center mt-4">HYR NE LLOGARI</h3>
+
+<div class="d-flex justify-content-center align-items-center max-vh-100 mt-4">
+
+    <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        {{ form|crispy}}
+        <div class="d-flex justify-content-center">
+
+            <input type="submit" value="LOGIN" class="btn btn-light mx-2">
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

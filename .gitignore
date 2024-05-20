@@ -1,0 +1,24 @@
+# Ignore compiled files
+*.pyc
+*.class
+
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore cache files
+__pycache__/
+.cache/
+
+# Ignore database files
+*.db
+*.sqlite3
+*.pyc
+# Ignore sensitive or environment-specific information
+config.ini
+secrets.json
+
+# Ignore IDE and editor-specific files
+.vscode/
+.idea/
+*.sublime-project
