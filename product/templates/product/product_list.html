@@ -35,7 +35,7 @@
     </tr>
 </table>
 
-<table class="table table-bordered table-striped" id="monthly_report">
+<table class="table table-bordered table-striped table-light table-hover" id="monthly_report">
     <thead>
         <th></th>
         <th>Stoku total</th>
@@ -132,8 +132,8 @@
               const costCell = rows[i].getElementsByTagName('td')[5]; 
               const revenueCell = rows[i].getElementsByTagName('td')[6]; 
   
-              const cost = parseFloat(costCell.textContent.replace(' ALL', ''));
-              const revenue = parseFloat(revenueCell.textContent.replace(' ALL', ''));
+              const cost = parseFloat(costCell.textContent.replace(',', ''));
+              const revenue = parseFloat(revenueCell.textContent.replace(',', ''));
   
               totalCost += cost;
               totalRevenue += revenue;

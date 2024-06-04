@@ -52,14 +52,14 @@ class Product (models.Model):
     
     
     name=models.CharField(max_length=255, unique=True)
-    celja_quantity = models.DecimalField(default=0, decimal_places=2, max_digits=20) #celja qe do llogaritet muaj per muaj 
+    celja_quantity = models.DecimalField(default=0, decimal_places=2, max_digits=20, editable=False) #celja qe do llogaritet muaj per muaj 
     actual_stock = models.DecimalField(default=0, decimal_places=2, max_digits=20) #stoku aktual per muajin aktual
     total_stock = models.DecimalField(default=0, decimal_places=2, max_digits=20) #stoku total per muajin e zgjedhur
     product_created_at = models.DateTimeField(auto_now_add=True) #kur eshte hedhur produkti ne sistem 
     updated_at = models.DateTimeField(null=True, blank=True) #kur eshte bere ndonje ndryshim ne produkt (hedhje report, modifikim etj)
     notes = models.TextField (blank=True)  #momentalisht nuk jan editable 
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='created_products') 
-    last_modified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    last_modified_by = models.ForeignKey(User, on_delete=models.PROTECT, null=True)
     unit = models.CharField(max_length=10, choices=UNIT_CHOICES, default='kg')
     search_vector = SearchVectorField(null=True, editable = False)
     total_cost_per_product = models.DecimalField(max_digits=20, decimal_places=2, blank=True, null=True) #sa eshte shpenzuar per blerje per produktin e zgjedhur ne muajin e gjedhur

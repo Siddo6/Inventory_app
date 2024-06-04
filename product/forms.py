@@ -2,7 +2,7 @@ from django import forms
 from .models import Product, DailyReport
 
 class ProductForm(forms.ModelForm):
-  
+   
     class Meta:
         model = Product
         fields = ['name','unit', 'notes']
@@ -11,9 +11,12 @@ class ProductForm(forms.ModelForm):
             'unit': 'NJESIA',
             'notes': 'SHENIME'
         }
-       
-                
-        
+        widgets = {
+            'notes': forms.Textarea(attrs={'rows': 2})  # Adjust the size of the notes field
+        }
+         
+class ExcelUploadForm(forms.Form):
+    excel_file = forms.FileField()      
         
 class SelectDataForm(forms.Form):
      year = forms.ChoiceField(
@@ -36,7 +39,7 @@ class SelectDataForm(forms.Form):
     
 class DailyReportForm(forms.Form):
     action = forms.ChoiceField(choices=DailyReport.ACTION_CHOICES, label='SHITJE/BLERJE')
-    product = forms.ModelChoiceField(queryset=Product.objects.all(), empty_label=' ', label='PRODUKTI')
+    product = forms.CharField(label='PRODUKTI', widget=forms.TextInput(attrs={'placeholder': 'Search for a product...', 'id': 'product-search'}))
     quantity = forms.DecimalField(max_digits=20, decimal_places=2, label='SASIA')
     price = forms.DecimalField(max_digits=20, decimal_places=2, label='CMIMI')
     

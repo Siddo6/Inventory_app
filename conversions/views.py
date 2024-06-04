@@ -3,15 +3,20 @@ import pandas as pd
 from django.http import HttpResponse
 from io import BytesIO
 
-# Create your views here.
+# downloading excel
 def download_excel(request):
     if request.method == 'POST':
         html_content = request.POST.get('html_content', '')
         soup = BeautifulSoup(html_content, 'html.parser')
         table = soup.find('table')
 
-        # Extract headers
-        headers = [th.text.strip() for th in table.find_all('th')]
+        # Extract headers / per te parin do shkruhet manualisht Produkti sepse nxjerr nga dropdown te gjitha produktet 
+        headers = []
+        for i, th in enumerate(table.find_all('th')):
+                if i == 0:
+                    headers.append('Produkti')
+                else:
+                    headers.append(th.text.strip())
 
         # Extract rows
         rows = []

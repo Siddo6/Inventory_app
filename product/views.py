@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Product, DailyReport, MonthlyData
-from .forms import ProductForm, DailyReportForm, SelectDataForm
+from .forms import ProductForm, DailyReportForm, SelectDataForm, ExcelUploadForm
 from django.db.models import Q
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.http import JsonResponse
-
+import pandas as pd  
+import openpyxl
+from django.db import IntegrityError
+from django.contrib import messages
 
 
 
@@ -30,12 +33,15 @@ def daily_report(request):
         form = DailyReportForm(request.POST)
         if form.is_valid():
             action = form.cleaned_data['action']
-            product = form.cleaned_data['product']
+            product_name = form.cleaned_data['product']
             quantity = form.cleaned_data['quantity']
             price = form.cleaned_data['price']
+            
+            # Fetch the product instance from the database using the product name
+            product = get_object_or_404(Product, name=product_name)
+    
             if action == 'sale':
-                if quantity > product.actual_stock:
-                    # Display an error message to the user
+                 if int(quantity)  > product.actual_stock:
                     form.add_error(None, 'Po perpiqesh te shtosh shitje me sasi me te madhe se stoku aktual... Te lutem rikontrollo shifrat')
                     return render(request, 'product/daily_report.html', {'form': form, 'daily_reports': daily_reports})
             # krijon nje istance te re
@@ -78,7 +84,7 @@ def select_datas(request):
 
 #funksioni qe nxjerr produktet per muajin aktual
 @login_required
-def product_list_current_month (request, current_year, current_month):
+def product_list_current_month (request):
     current_year = datetime.now().year
     current_month = datetime.now().month
      # filtron reportet per muajin aktual
@@ -272,8 +278,6 @@ def get_total_stock_and_sales(product_id, year, month):
 
     return product.total_stock, product.sales
 
- 
-
 
 def autocomplete_products(request):
     if 'term' in request.GET:
@@ -281,3 +285,56 @@ def autocomplete_products(request):
         products = list(qs.values_list('name', flat=True))
         return JsonResponse(products, safe=False)
     return JsonResponse([], safe=False)
+
+
+def upload_products(request):
+     if request.method == 'POST':
+        excel_form = ExcelUploadForm(request.POST, request.FILES)
+        if excel_form.is_valid():
+            excel_file = request.FILES['excel_file']
+            wb = openpyxl.load_workbook(excel_file)
+            sheet = wb.active
+            duplicate_products = []
+
+            for row in sheet.iter_rows(min_row=2, values_only=True):
+                name = row[0]  # Assuming first column is the product name
+                unit = row[1] if len(row) > 1 and row[1] is not None else ''  # Ensure unit is a non-null string
+                notes = row[2] if len(row) > 2 and row[2] is not None else ''  # Ensure notes is a non-null string
+
+                if name:  # Check if the name is present
+                    try:
+                        Product.objects.create(name=name, unit=unit, notes=notes)
+                    except IntegrityError:
+                        duplicate_products.append(name)
+                        continue
+
+            wb.close()
+
+            if duplicate_products:
+                messages.error(request, f"Products with the following names already exist: {', '.join(duplicate_products)}")
+
+            return redirect('index')  # Redirect after successful upload or if there are duplicates
+     else:
+        excel_form = ExcelUploadForm()
+    
+     return render(request, 'product/upload_products.html', {'excel_form': excel_form})
+ 
+
+def list_all_products(request):
+    products = Product.objects.all()
+    return render(request, 'product/list_all_products.html', {'products': products})
+    
+def product_edit(request, product_id):
+   
+    product = get_object_or_404(Product, id=product_id)
+
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=product)
+        if form.is_valid():
+            form.save()
+            product.last_modified_by = request.user
+            return redirect('product_details', product_id=product.id, current_year=current_year, current_month=current_month)  # Redirect to product details
+    else:
+        form = ProductForm(instance=product)
+
+    return render(request, 'product/product_edit.html', {'form': form})

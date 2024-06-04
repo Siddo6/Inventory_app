@@ -28,7 +28,7 @@
         <tr>
             {% for field in form %}
             <td> {% if field.name == "product" %}
-                <input type="text" id="product-search" placeholder="Type to search...">
+                
                 <div id="product-suggestions"></div>
                 {{ field }}
             {% else %}

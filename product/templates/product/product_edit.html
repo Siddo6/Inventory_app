@@ -1,0 +1,23 @@
+{% extends 'core/base.html' %}
+
+{% block content %}
+<div class="text-left">
+	<form method="post">
+		{% csrf_token %}
+		<table class="table table-bordered table-striped">
+			<tr>
+				<th>{{ form.name.label }}</th>
+				<td>{{ form.name }}</td>
+			</tr>
+			<tr>
+				<th>{{ form.unit.label }}</th>
+				<td>{{ form.unit }}</td>
+			</tr>
+			<tr>
+				<th>{{ form.notes.label }}</th>
+				<td>{{ form.notes }}</td>
+			</tr>
+		</table>
+		<button type="submit" class="d-block mx-auto">MODIFIKO</button>
+	</form>
+{% endblock %}
