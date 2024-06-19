@@ -6,25 +6,28 @@
         background-color: #f0f0f0; /* Change to your desired hover background color */
         cursor: pointer; /* Show pointer cursor on hover */
     }
+
+    .custom-card-body{
+        display: flex;
+        align-items: center;
+    }
 </style>
 
 <div class="container mt-4">
-    <div class="alert alert-secondary text-center font-weight-bold">
+    <div class="alert alert-secondary text-center font-weight-bold custom-bg">
         KETO JANE PRODUKTET QE TI KE MOMENTALISHT NE SISTEM:
     </div>
 
-    <div class="flex justify-center">
-        <div class="card w-50">
-            <div class="card-body">
-                <ol class="list-group list-group-flush">
+    <div class="grid-container">
                     {% for prod in products %}
-                        <li class="list-group-item">{{ prod.name }}</li>
+                    <div class="card">
+                        <div class="card-body ">
+                            <p>{{ prod.name }}</p>
+                        </div>
+                    </div>
                     {% endfor %}
-                </ol>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
 
 {% endblock %}

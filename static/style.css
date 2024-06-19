@@ -1,0 +1,74 @@
+html, body {
+    max-width: 100vw;
+    margin: 0;
+}
+
+body {
+    background-color: #a9c1d6;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+}
+
+a {
+    text-decoration: none;
+    color: #0D1821;
+}
+
+main {
+    grid-row: 2; /* Ensure content starts at the top after nav */
+}
+
+.custom-nav-bg {
+    background-color: #344966;
+    height:5vh;
+}
+
+.blue-btn{
+    background-color: #344966;
+    color: #FAFAFF;
+}
+
+
+.custom-bg{
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.custom-shadow{
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+.custom-btn{
+    border: none;
+    border-radius: 6px;
+    padding: 8px 16px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 10px;
+}
+
+.card {
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-hover:hover{
+    background-color: rgba(255, 255, 255, 0.5);
+    border: none;
+}
+
+.custom-row {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+.custom-hover:hover{
+    background-color: rgba(255, 255, 255, 0.8);
+}

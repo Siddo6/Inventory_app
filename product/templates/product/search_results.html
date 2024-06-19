@@ -1,35 +1,13 @@
 {% extends 'core/base.html' %}
 
 {% block content %}
-<div class=" container shadow p-4 mx-auto mt-3 bg-body rounded">
+<div class=" container shadow p-4 mx-auto mt-3 custom-bg rounded">
 <h5 class="mt-4">Search results for "{{ query }}"</h5>
 {% now "Y-m" as current_date %}
     {% if results %}
-       
-    <h5>Te gjitha veprimet e kryera per kete produkt:</h5>
-    <table class="table table-bordered table-striped" id="monthly_report">
-        <thead>
-            <th></th>
-            <th>Sasia (ne {{ product.unit }})</th>
-            <th>Cmimi/njesi</th>
-            <th>Data e veprimit</th>
-        </thead>
-    
-        {% for report in reports %}
-        <tr>
-            <td>{{ report.get_action_display }} </td>
-               <td> {{ report.quantity }}</td>
-                <td>{{ report.price }} ALL </td>
-                <td>{{ report.created_at }}</td>
-                {% endfor %}           
-        </tr>
-   
-    </table>
-     
-     
-            
-    
-
+       {% for result in results %}
+         <div>{{ result.name|upper }} - Krijuar nga {{ result.created_by }}</div>
+         {% endfor %}
     {% else %}
 
     <p class="mx-3">Ti nuk ke te dhena te ruajtura per produktin e zgjedhur.</p>

@@ -11,7 +11,7 @@ import openpyxl
 from django.db import IntegrityError
 from django.contrib import messages
 
-
+data_cache = {}
 
 now = datetime.now()
 current_year = datetime.now().year
@@ -144,19 +144,7 @@ def product_list(request, year=None, month=None):
     products = Product.objects.filter(id__in=daily_reports.values_list('product', flat=True))
 
     for product in products:
-        product.celja_quantity = calculate_celja(product.id, year, month)
-        total_cost = 0
-        total_revenue = 0
-        buys = 0
-        sales = 0
-        # iteron per cdo produkt te gjitha reportet dhe llogarit shitje e blerjet
-        for report in daily_reports.filter(product=product):
-                if report.action == 'buy':
-                        total_cost += report.cost
-                        buys += report.quantity
-                elif report.action == 'sale':
-                        total_revenue += report.revenue
-                        sales += report.quantity
+        #logic here        
 
         product.total_cost_per_product = total_cost
         product.total_revenue_per_product = total_revenue
@@ -180,7 +168,10 @@ def create_product(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
         if form.is_valid():
-            form.save()
+            product = form.save(commit=False)  # Don't save yet
+            product.created_by = request.user  # Set the created_by field
+            product.created_at = timezone.now() 
+            product.save()  # Now save the product with the created_by user
             return redirect('index')
     else:
         form = ProductForm()
@@ -338,3 +329,55 @@ def product_edit(request, product_id):
         form = ProductForm(instance=product)
 
     return render(request, 'product/product_edit.html', {'form': form})
+
+
+def save_totals(year, month):
+    
+     # filtron reportet per muajin e zgjedhur
+    daily_reports = DailyReport.objects.filter(
+        created_at__year=year,
+        created_at__month=month
+    )
+
+    # nxjerr listen e prdukteve per te cilat ka reporte, pa duplikate
+    products = Product.objects.filter(id__in=daily_reports.values_list('product', flat=True))
+    
+    # Initialize the year and month in the cache if not already present
+    if year not in data_cache:
+        data_cache[year] = {}
+    if month not in data_cache[year]:
+        data_cache[year][month] = {}
+
+    for product in products:
+        product.celja_quantity = calculate_celja(product.id, year, month)
+        total_cost = 0
+        total_revenue = 0
+        buys = 0
+        sales = 0
+        # iteron te cdo report per cdo produkt qe te llogariten shitje e blerje 
+        for report in daily_reports.filter(product=product):
+                if report.action == 'buy':
+                        total_cost += report.cost
+                        buys += report.quantity
+                elif report.action == 'sale':
+                        total_revenue += report.revenue
+                        sales += report.quantity
+
+        product.total_cost_per_product = total_cost
+        product.total_revenue_per_product = total_revenue
+        product.buys = buys
+        product.sales = sales
+        product.total_stock = product.celja_quantity + product.buys
+        
+        data_cache[year][month][product.id] = {
+            'celja_quantity': product.celja_quantity,
+            'total_stock': product.total_stock,
+            'total_sales': product.sales,
+            'total_revenue_per_product': product.total_revenue_per_product,
+            'total_cost_per_product': product.total_cost_per_product
+        }
+        
+    return data_cache[year][month]
+
+def get_data(year, month, product_id, property):
+    return data_cache.get(year, {}).get(month, {}).get(product_id, {}).get(property)

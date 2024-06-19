@@ -7,7 +7,7 @@
 <h3 class="d-flex justify-content-center align-items-center mt-4">REGJISTROHU</h3>
 <div class="d-flex justify-content-center align-items-center">
 
-        <form action="{% url 'signup' %}" method="post">
+        <form action="{% url 'signup' %}" method="post" >
                 {% csrf_token %}
                 {{ form|crispy }}
                 <div class="d-flex justify-content-center">
